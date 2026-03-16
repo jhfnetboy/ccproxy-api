@@ -19,6 +19,7 @@ dependencies = [
   "packaging>=25.0",
   "sortedcontainers>=2.4.0",
   "pyjwt>=2.10.1",
+  "python-telegram-bot>=21.0",
 ]
 
 [build-system]
