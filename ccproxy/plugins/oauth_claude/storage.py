@@ -16,8 +16,17 @@ logger = get_plugin_logger()
 
 
 # Keychain service name used by Claude Code
-KEYCHAIN_SERVICE = "Claude Code"
-KEYCHAIN_ACCOUNT = "credentials"
+# Newer Claude Code (>=2.x) uses "Claude Code-credentials" with system username as account;
+# older versions used "Claude Code" / "credentials". Try both in order.
+import getpass as _getpass
+
+KEYCHAIN_CANDIDATES: list[tuple[str, str]] = [
+    ("Claude Code-credentials", _getpass.getuser()),
+    ("Claude Code", "credentials"),
+]
+# Back-compat exports
+KEYCHAIN_SERVICE = KEYCHAIN_CANDIDATES[0][0]
+KEYCHAIN_ACCOUNT = KEYCHAIN_CANDIDATES[0][1]
 
 
 def _is_keyring_available() -> bool:
@@ -57,10 +66,17 @@ async def _read_from_keychain() -> dict[str, Any] | None:
         try:
             import keyring
 
-            password = keyring.get_password(KEYCHAIN_SERVICE, KEYCHAIN_ACCOUNT)
+            password = None
+            for svc, acct in KEYCHAIN_CANDIDATES:
+                password = keyring.get_password(svc, acct)
+                if password:
+                    break
             if password:
                 parsed = json.loads(password)
                 if isinstance(parsed, dict):
+                    # Claude Code newer format wraps under "claudeAiOauth"
+                    if "claudeAiOauth" in parsed and "claude_ai_oauth" not in parsed:
+                        parsed = {"claude_ai_oauth": parsed["claudeAiOauth"]}
                     return parsed
                 logger.debug(
                     "keychain_invalid_format",

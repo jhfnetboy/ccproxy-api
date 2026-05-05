@@ -120,6 +120,15 @@ class ClaudeAPIAdapter(BaseHTTPAdapter):
                     continue
                 filtered_headers[lk] = value
 
+        # oauth-2025-04-20: required for OAuth Bearer token auth (Anthropic 2026-03)
+        filtered_headers["anthropic-beta"] = "oauth-2025-04-20"
+
+        # Required for OAuth Bearer token auth + CC-style requests (Anthropic 2026)
+        filtered_headers["anthropic-beta"] = (
+            "claude-code-20250219,oauth-2025-04-20,"
+            "interleaved-thinking-2025-05-14,fine-grained-tool-streaming-2025-05-14"
+        )
+
         return json.dumps(body_data).encode(), filtered_headers
 
     async def process_provider_response(
