@@ -26,6 +26,7 @@ DEFAULT_CODEX_MODEL_CARDS: list[ModelCard] = [
 
 
 DEFAULT_CODEX_MODEL_MAPPINGS: list[ModelMappingRule] = [
+    ModelMappingRule(match="gpt-5.3-codex", target="gpt-5.3-codex", kind="exact"),
     ModelMappingRule(match="gpt-5-codex", target="gpt-5.3-codex", kind="prefix"),
     ModelMappingRule(match="gpt-", target="gpt-5.3-codex", kind="prefix"),
     ModelMappingRule(match="o3-", target="gpt-5.3-codex", kind="prefix"),

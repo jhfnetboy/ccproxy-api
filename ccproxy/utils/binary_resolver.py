@@ -256,6 +256,7 @@ class BinaryResolver:
         """
         paths = [
             # User-specific locations
+            Path.home() / ".bun" / "bin" / binary_name,  # bun global installs
             Path.home() / ".cache" / ".bun" / "bin" / binary_name,
             Path.home() / ".local" / "bin" / binary_name,
             Path.home() / ".local" / "share" / "nvim" / "mason" / "bin" / binary_name,
