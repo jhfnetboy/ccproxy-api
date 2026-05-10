@@ -74,9 +74,9 @@ do_restart_ccproxy() {
     nohup "$CCPROXY" serve --port "$PORT" >> "$LOG" 2>&1 &
     local pid=$!
 
-    # 等待健康检查通过（最多 15s）
+    # 等待健康检查通过（最多 25s，ccproxy 冷启动约 8s）
     local i=0
-    while (( i < 15 )); do
+    while (( i < 25 )); do
         if curl -s "http://127.0.0.1:${PORT}/health/live" > /dev/null 2>&1; then
             log "  ✓ ccproxy 已启动 (pid $pid, port $PORT)"
             return 0
